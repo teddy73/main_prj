@@ -12,7 +12,7 @@ import networkx as nx
 import csv
 from datetime import datetime, timedelta
 from pandas.tseries.offsets import DateOffset 
-#create dataframe - convert date then sort the interaction type(RT-RE) based on date
+#create dataframe 
 def create_dataframe_and_graph_data(data_address,graph_address):
     data_address=data_address
     graph_address=graph_address

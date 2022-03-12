@@ -9,7 +9,9 @@ from make_feature_for_thresholdmodels import *
 from multiprocessing import Pool
 from predict import *
 import os
-
+from bi_threshold.CTL.causal_tree_learn import CausalTree_bi_threshold
+from CTL.causal_tree_learn import CausalTree
+#change
 #define main variable that use in project
 #you can choose which login type or k or b you want to use 
 code_address = os.getcwd()
@@ -100,7 +102,9 @@ def compute_thresholds(d):
     ctl_bi_threshold.fit(x_train, y_train, t_train)
     ctl_predict_bi_threshold = ctl_bi_threshold.predict(x_test)
     triggers_bi_threshold = ctl_bi_threshold.get_triggers(x_test)
-    np.save(code_address+'/%s/threshold/down_threshold%s'%(d), triggers_bi_threshold[0])
-    np.save(code_address+'/%s/threshold/up_threshold%s'%(d), triggers_bi_threshold[1])    
+    np.save(code_address+'/%s/threshold/down_threshold%s'%(d), 
+    triggers_bi_threshold[0])
+    np.save(code_address+'/%s/threshold/up_threshold%s'%(d), 
+    triggers_bi_threshold[1])    
 if __name__ == "__main__":
     main_func()   

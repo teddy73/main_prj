@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Mar  7 23:33:16 2022
-
-@author: macbook
-"""
 import pandas as pd
 import numpy as np 
 import math
@@ -21,9 +16,10 @@ def set_login_time(graph_data_drop_duplicate_users,login_type,login_time,k,b,win
     else:
         col_login='login_time_bithreshold'
         col_counter = 'counter_bi'
-    #update login time based the login type   
+    #update login time based on the login type   
     if (login_type=='constant'):
-        mask = (graph_data_drop_duplicate_users[col_counter]==1)
+        mask = (graph_data_drop_duplicate_users[col_counter]==1)& (
+                graph_data_drop_duplicate_users[col_login]==window_min)
         p=pd.DataFrame(np.array(graph_data_drop_duplicate_users.loc[
             mask, col_login]+DateOffset(hours=login_time)))
         graph_data_drop_duplicate_users.loc[
@@ -46,8 +42,7 @@ def set_login_time(graph_data_drop_duplicate_users,login_type,login_time,k,b,win
                        graph_data_drop_duplicate_users.loc[
                            mask, col_login]+DateOffset(hours=k)))
         graph_data_drop_duplicate_users.loc[
-                       mask, col_login] = np.array(p[0]) 
-        
+                       mask, col_login] = np.array(p[0])      
     else :
         temp=math.floor(math.log(k, b))
         for i in range(1,temp):
@@ -66,8 +61,5 @@ def set_login_time(graph_data_drop_duplicate_users,login_type,login_time,k,b,win
                 graph_data_drop_duplicate_users.loc[
                     mask, col_login]+DateOffset(hours=k)))
         graph_data_drop_duplicate_users.loc[
-                mask, col_login] = np.array(p[0])      
-       
-        
-              
+                mask, col_login] = np.array(p[0])                  
     return graph_data_drop_duplicate_users

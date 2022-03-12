@@ -63,7 +63,15 @@ def prediction(main_data,
         graph_data_drop_duplicate_users['counter_thre']=np.load(
                 code_address+'/%s/counter%s.npy' %(effective_time,i))
         graph_data_drop_duplicate_users['counter_bi']=np.load(
-                code_address+'/%s/counter%s.npy'%(effective_time,i))    
+                code_address+'/%s/counter%s.npy'%(effective_time,i))  
+        #update the login time for users who are not become active at all
+        mask = (graph_data_drop_duplicate_users['counter_bi']==0)
+        graph_data_drop_duplicate_users.loc[
+                mask, 'login_time_bithreshold'] = window_min  
+        #update the login time for users who are not become active at all
+        mask = (graph_data_drop_duplicate_users['counter_thre']==0)
+        graph_data_drop_duplicate_users.loc[
+                mask, 'login_time_linearthreshold'] = window_min                
         # set the start and end time of prediction(24 hours prediction after last trainset time)
         max_time_in_prediction = trainset['date'].max()+DateOffset(hours=24)
         min_time_in_prediction = trainset['date'].max()+DateOffset(hours=1) 

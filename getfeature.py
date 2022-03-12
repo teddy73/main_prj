@@ -37,7 +37,7 @@ def create_features_for_all_trainset(main_data, graph_data,network_of_following)
     #like the number of retweet and reply for users and their neighbors
     trainset_time = main_data[main_data['date']<='2012-07-01 12:00:00'][
         'date'].max()
-    loop_for_all_different_trainsize = [i for i in range(1,3)]
+    loop_for_all_different_trainsize = [i for i in range(1,24)]
     for i in loop_for_all_different_trainsize:
         #make new trainset based on next time 
         trainset = main_data[main_data['date']<=trainset_time]  
