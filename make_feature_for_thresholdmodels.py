@@ -241,8 +241,10 @@ def create_inputs_for_thresholdmodel(main_data,
             
 def make_input_for_models(effective_time):
     code_address = os.getcwd()
+    #make directory for saving the inputs we need for threshold models
     os.mkdir(code_address+'/%s/'%(effective_time)+'/threshold/')
     loop=[i for i in range(1,24)]
+    #we should load influence and features that we create to make inputs
     for i in loop:
        user=np.load(code_address+'/%s/user%s.npy' 
                     %(effective_time,i),allow_pickle=True)
@@ -250,8 +252,10 @@ def make_input_for_models(effective_time):
                        %(effective_time,i),allow_pickle=True)
        y_train=np.load(code_address+'/%s/outcome%s.npy'
                        %(effective_time,i),allow_pickle=True)
+        #create new dataframe and add features for different trainsize               
        p=pd.DataFrame(np.load(code_address+'/features/x_train%s.npy'
                               %(i)))
+       #change the column name of DataFrameForFeatures                       
        p.columns=['in_deg',
                   'out_deg',
                   'number_of_RT_train',
@@ -260,6 +264,7 @@ def make_input_for_models(effective_time):
                   'RE_neigh_train']
        p['user']=np.load(code_address+'/features/user%s.npy'
                          %(i),allow_pickle=True)
+       #filter users who are active and inactive at the moment                  
        df=pd.DataFrame({'user':user})
        df = df.merge(p, how='left', on='user')   
        x_train=df[['in_deg',
@@ -274,6 +279,7 @@ def make_input_for_models(effective_time):
                  'number_of_RE_train',
                  'RT_neigh_train',
                  'RE_neigh_train']].to_numpy()
+       #save the results           
        np.save(code_address+'/%s/threshold/y_train%s'
                %(effective_time,i),y_train)
        np.save(code_address+'/%s/threshold/t_train%s'
