@@ -81,13 +81,21 @@ def prediction(main_data,
                    'effective_time':list_of_effective_time_in_trainset})     
         graph_data_drop_duplicate_users = \
                 graph_data_drop_duplicate_users.merge(df_temp, how='left', on='user')
+        #fill null value in effective time column        
+        DataFrameWithDatetimeColumns = \
+            graph_data_drop_duplicate_users.select_dtypes(include=['datetime'])
+        graph_data_drop_duplicate_users[DataFrameWithDatetimeColumns.columns] = \
+            DataFrameWithDatetimeColumns.fillna(
+                main_data['date'].min()-DateOffset(hours=35)) 
+        #update effective time                  
         graph_data_drop_duplicate_users['effective_time'] =\
             graph_data_drop_duplicate_users[
-                'effective_time']+DateOffset(hours=effective_time)
+                'effective_time']+DateOffset(hours=effective_time) 
+        #set the effective time for both bi and linear threshold                    
         graph_data_drop_duplicate_users['effective_time_for_linear_threshold']=\
-            list(graph_data_drop_duplicate_users['effective_time'])
+            np.array(graph_data_drop_duplicate_users['effective_time'])
         graph_data_drop_duplicate_users['effective_time_for_bi_threshold']=\
-                list(graph_data_drop_duplicate_users['effective_time'])
+                np.array(graph_data_drop_duplicate_users['effective_time'])
         graph_data_drop_duplicate_users=\
                 graph_data_drop_duplicate_users.drop(['effective_time'],axis=1)
         #set active node from last time in trainset        
@@ -114,11 +122,11 @@ def prediction(main_data,
         while min_time_in_prediction <= max_time_in_prediction:    
             window_min = min_time_in_prediction 
             window_max = min_time_in_prediction + DateOffset(hours=1)
-             #update the login time for users who are not become active at all
+            #update the login time for users who are not become active at all
             mask = (graph_data_drop_duplicate_users['counter_bi']==0)
             graph_data_drop_duplicate_users.loc[
                 mask, 'login_time_bithreshold'] = window_min  
-        #update the login time for users who are not become active at all
+            #update the login time for users who are not become active at all
             mask = (graph_data_drop_duplicate_users['counter_thre']==0)
             graph_data_drop_duplicate_users.loc[
                 mask, 'login_time_linearthreshold'] = window_min  
