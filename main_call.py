@@ -85,7 +85,7 @@ def main_func():
                    login_type, 
                    login_time, 
                    k, 
-                   b,)
+                   b)
 #for each trainsize, we should compute threshold, up and down thresholds        
 def compute_thresholds(d):  
     #set the variable that we need for model  
@@ -113,6 +113,6 @@ def compute_thresholds(d):
     triggers_bi_threshold[0])
     np.save(code_address+'/%s/threshold/up_threshold%s'%(d), 
     triggers_bi_threshold[1]) 
-       
+
 if __name__ == "__main__":
     main_func()   
