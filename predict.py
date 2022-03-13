@@ -18,16 +18,17 @@ def prediction(main_data,
                login_time,
                k,
                b):
-    new=pd.melt(main_data,id_vars=['date'],value_vars=['user','target_user'],value_name='user')
-    new=new.sort_values('date').reset_index(drop=True)
+    MainDataFrame=pd.melt(
+        main_data,id_vars=['date'],value_vars=['user','target_user'],value_name='user')
+    MainDataFrame=MainDataFrame.sort_values('date').reset_index(drop=True)
     list_of_time_in_trainset=[]
     list_of_bithreshold_error_for_all_trainsize=[]
     list_of_linearthreshold_error_for_all_trainsize=[] 
     #create new folder to save error results of models
     code_address = os.getcwd()
     os.mkdir(code_address+'/%s/'%(effective_time)+'/result/')
-    trainset_time=main_data[main_data['date']<='2012-07-01 06:00:00'][
-            'date'].max()+DateOffset(hours=6) 
+    trainset_time=main_data[main_data['date']<='2012-07-01 12:00:00'][
+            'date'].max()
     loop = [i for i  in range(1,24)]
     #predict number of active node for all 23 trainsize based bi and linear threshold
     for i in loop:
@@ -77,9 +78,10 @@ def prediction(main_data,
         min_time_in_prediction = trainset['date'].max()+DateOffset(hours=1) 
         # set the effective time for nodes who are still effective from trainset
         #df_temp: the temporary dataframe
-        df_temp=new.loc[
-                (new['date']>=min_time_in_prediction-DateOffset(hours=effective_time))&
-                (new['date']<min_time_in_prediction)]
+        df_temp=MainDataFrame.loc[
+                (MainDataFrame['date']>=
+                min_time_in_prediction-DateOffset(hours=effective_time))&
+                (MainDataFrame['date']<min_time_in_prediction)]
         list_of_effective_time_in_trainset = np.array(
                 df_temp.groupby('user').max()['date'])
         list_of_users =list(df_temp.groupby('user').max()['date'].keys())
@@ -121,9 +123,9 @@ def prediction(main_data,
              window_min = min_time_in_prediction 
              window_max = min_time_in_prediction + DateOffset(hours=1)
              #obtain the list of real active node at the moment
-             list_of_active_nodes_indata.extend(list(set(list(new.loc[
-                 (new['date']>=window_min)&
-                 (new['date']<window_max),'user']))))
+             list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[
+                 (MainDataFrame['date']>=window_min)&
+                 (MainDataFrame['date']<window_max),'user']))))
 ################################################### compute the real active nodes
 ################################################### predict the active node based on linear threhsold model
              #delete the nodes who are not effective
