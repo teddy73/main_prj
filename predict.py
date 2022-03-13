@@ -96,8 +96,10 @@ def prediction(main_data,
             np.array(graph_data_drop_duplicate_users['effective_time'])
         graph_data_drop_duplicate_users['effective_time_for_bi_threshold']=\
                 np.array(graph_data_drop_duplicate_users['effective_time'])
+        #delete the effective time column        
         graph_data_drop_duplicate_users=\
                 graph_data_drop_duplicate_users.drop(['effective_time'],axis=1)
+        """        
         #set active node from last time in trainset        
         list_of_active_nodes_indata.extend(list(main_data.loc[
             (main_data['date']==max_time_in_trainset),'user']))
@@ -108,6 +110,7 @@ def prediction(main_data,
             list_of_active_nodes_indata)
         list_of_activenodes_predicted_by_bithreshold.extend(
             list_of_active_nodes_indata)
+        """    
         #reset errors for different trainsize
         mean_absolute_persentage_error_linearthreshold=0
         mean_absolute_persentage_error_bithreshold=0   
