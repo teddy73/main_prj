@@ -64,15 +64,7 @@ def prediction(main_data,
         graph_data_drop_duplicate_users['counter_thre']=np.load(
                 code_address+'/%s/counter%s.npy' %(effective_time,i))
         graph_data_drop_duplicate_users['counter_bi']=np.load(
-                code_address+'/%s/counter%s.npy'%(effective_time,i))  
-        #update the login time for users who are not become active at all
-        mask = (graph_data_drop_duplicate_users['counter_bi']==0)
-        graph_data_drop_duplicate_users.loc[
-                mask, 'login_time_bithreshold'] = window_min  
-        #update the login time for users who are not become active at all
-        mask = (graph_data_drop_duplicate_users['counter_thre']==0)
-        graph_data_drop_duplicate_users.loc[
-                mask, 'login_time_linearthreshold'] = window_min                
+                code_address+'/%s/counter%s.npy'%(effective_time,i))                
         # set the start and end time of prediction(24 hours prediction after last trainset time)
         max_time_in_prediction = trainset['date'].max()+DateOffset(hours=24)
         min_time_in_prediction = trainset['date'].max()+DateOffset(hours=1) 
@@ -119,17 +111,25 @@ def prediction(main_data,
         list_ofdownthreshold = np.array(graph_data_drop_duplicate_users['down_threshold'])
         window_test = main_data.loc[
             (main_data['date']==max_time_in_trainset),'date'].min() + DateOffset(hours=6)
-        while min_time_in_prediction <= max_time_in_prediction:
-             window_min = min_time_in_prediction 
-             window_max = min_time_in_prediction + DateOffset(hours=1)
+        while min_time_in_prediction <= max_time_in_prediction:    
+            window_min = min_time_in_prediction 
+            window_max = min_time_in_prediction + DateOffset(hours=1)
+             #update the login time for users who are not become active at all
+            mask = (graph_data_drop_duplicate_users['counter_bi']==0)
+            graph_data_drop_duplicate_users.loc[
+                mask, 'login_time_bithreshold'] = window_min  
+        #update the login time for users who are not become active at all
+            mask = (graph_data_drop_duplicate_users['counter_thre']==0)
+            graph_data_drop_duplicate_users.loc[
+                mask, 'login_time_linearthreshold'] = window_min  
              #obtain the list of real active node at the moment
-             list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[
+            list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[
                  (MainDataFrame['date']>=window_min)&
                  (MainDataFrame['date']<window_max),'user']))))
 ################################################### compute the real active nodes
 ################################################### predict the active node based on linear threhsold model
              #delete the nodes who are not effective
-             list_of_effective_node = np.array(
+            list_of_effective_node = np.array(
                  graph_data_drop_duplicate_users.loc[
                      (graph_data_drop_duplicate_users[
                          'effective_time_for_linear_threshold'
