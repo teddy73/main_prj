@@ -61,6 +61,7 @@ def main_func():
     both linear threshold and bithreshold model 
     """
     for i in effective_time:
+        #for each effective time we should get the influence
         create_inputs_for_thresholdmodel(
             main_data, 
             graph_data, 
@@ -70,10 +71,13 @@ def main_func():
             login_time,
             k,
             b)      
-        address ='/%s/'%(i)
+        address ='%s'%(i)
+        #for each effective time we should make input 
         make_input_for_models(i)
+        #we call computethreshold function parallary for all trainsize
         pool=Pool(processes=6)
-        pool.map(compute_thresholds,range(1,24))      
+        pool.map(compute_thresholds,range(1,24))   
+        #after we get thresholds we call prediction function   
         prediction(main_data,
                    graph_data, 
                    graph_data_drop_duplicate_users, 
@@ -82,8 +86,9 @@ def main_func():
                    login_time, 
                    k, 
                    b,)
-        
-def compute_thresholds(d):    
+#for each trainsize, we should compute threshold, up and down thresholds        
+def compute_thresholds(d):  
+    #set the variable that we need for model  
     y_train = np.load(code_address+'/address/threshold/y_train%s.npy' %(d))
     t_train=np.load(code_address+'/address/threshold/t_train%s.npy'%(d))
     x_train=np.load(code_address+'/address/threshold/x_train%s.npy'%(d))
@@ -91,20 +96,23 @@ def compute_thresholds(d):
     variable_names = []
     for i in range(x_train.shape[1]):
         variable_names.append(f"Column {i}") 
-# regular CTL
+    # regular CTL
     ctl = CausalTree(cont=True)
     ctl.fit(x_train, y_train, t_train)
     ctl_predict = ctl.predict(x_test)
     triggers = ctl.get_triggers(x_test)
+    #save thresholds
     np.save(code_address+'/%s/threshold/threshold%s'%(d), triggers)
-# bithreshold CTL
+    # bithreshold CTL
     ctl_bi_threshold = CausalTree_bi_threshold(cont=True)
     ctl_bi_threshold.fit(x_train, y_train, t_train)
     ctl_predict_bi_threshold = ctl_bi_threshold.predict(x_test)
     triggers_bi_threshold = ctl_bi_threshold.get_triggers(x_test)
+    #save thresholds
     np.save(code_address+'/%s/threshold/down_threshold%s'%(d), 
     triggers_bi_threshold[0])
     np.save(code_address+'/%s/threshold/up_threshold%s'%(d), 
-    triggers_bi_threshold[1])    
+    triggers_bi_threshold[1]) 
+       
 if __name__ == "__main__":
     main_func()   
