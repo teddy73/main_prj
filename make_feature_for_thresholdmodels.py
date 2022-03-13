@@ -185,11 +185,11 @@ def create_inputs_for_thresholdmodel(main_data,
             list_influenctialweight = list(
                 temporary_dataframe.groupby('user').min()['influence_weight'])
             user =list(
-                temporary_dataframe.groupby('user').sum()['influence_weight'].keys())            
+                temporary_dataframe.groupby('user').min()['influence_weight'].keys())            
             temporary_dataframe = temporary_dataframe.drop_duplicates(
                 subset ="user",keep = "first", inplace = False)
             temporary_dataframe_two = pd.DataFrame(
-                {'user':user,'influ':list_influenctialweight})
+                {'user':user,'influence':list_influenctialweight})
             temporary_dataframe = temporary_dataframe.merge(
                 temporary_dataframe_two, how='left', on='user')
             #filter dataframe based on nodes who are not active
@@ -199,11 +199,11 @@ def create_inputs_for_thresholdmodel(main_data,
             list_influenctialweight = list(
                 temporary_dataframe_two.groupby('user').max()['influence_weight'])
             user =list(
-                temporary_dataframe_two.groupby('user').sum()['influence_weight'].keys())
+                temporary_dataframe_two.groupby('user').max()['influence_weight'].keys())
             temporary_dataframe_two = temporary_dataframe_two.drop_duplicates(
                 subset ="user",keep = "first", inplace = False)
             temporary_dataframe_one =pd.DataFrame(
-                {'user':user,'influ':list_influenctialweight})
+                {'user':user,'influence':list_influenctialweight})
             temporary_dataframe_two = temporary_dataframe_two.merge(
                 temporary_dataframe_one, how='left', on='user')
             if temporary_dataframe.shape[0]<temporary_dataframe_two.shape[0]:
@@ -221,7 +221,7 @@ def create_inputs_for_thresholdmodel(main_data,
                    [temporary_dataframe, temporary_dataframe_two]).sort_index()
                temporary_dataframe_one=temporary_dataframe_one.reset_index()
             #set the varaible we want to save   
-            t_train=temporary_dataframe_one['influ'].to_numpy()  
+            t_train=temporary_dataframe_one['influence'].to_numpy()  
             user=temporary_dataframe_one['user'].to_numpy()
             outcome=temporary_dataframe_one['outcome'].to_numpy()
             counter=graph_data_drop_duplicate_users['counter']
