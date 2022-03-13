@@ -3,19 +3,22 @@
 import numpy as np
 import pandas as pd
 import datetime
+import os
 from create_dataframe import create_dataframe_and_graph_data, add_feature_in_dataset
 from getfeature import create_features_for_all_trainset
 from make_feature_for_thresholdmodels import *
 from multiprocessing import Pool
 from predict import *
-import os
 from bi_threshold.CTL.causal_tree_learn import CausalTree_bi_threshold
 from CTL.causal_tree_learn import CausalTree
+from drawplot import*
 #change
 #define main variable that use in project
 #you can choose which login type or k or b you want to use 
 code_address = os.getcwd()
 print(code_address)
+#make folder for plots
+os.mkdir(code_address+'/plots/')
 #define global address to allow other function use it
 global address
 flag_get_feature = True
@@ -86,6 +89,7 @@ def main_func():
                    login_time, 
                    k, 
                    b)
+        plot(login_type,login_time,k,b,i)
 #for each trainsize, we should compute threshold, up and down thresholds        
 def compute_thresholds(d):  
     #set the variable that we need for model  

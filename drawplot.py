@@ -5,7 +5,9 @@ import matplotlib as mpl
 import matplotlib.ticker as ticker
 import matplotlib.dates as dates
 import os
-def plot():
+def plot(LoginType,LoginTime,K,B,EffectiveTime):
+    #get the working directory
+    CodeAddress = os.getcwd()
     list_time= os.getcwd()
     error_bi= os.getcwd()
     error_linear = os.getcwd()
@@ -20,10 +22,8 @@ def plot():
                   '#98df8a', '#d62728', '#ff9896', '#9467bd', '#c5b0d5',
                   '#8c564b', '#c49c94', '#e377c2', '#f7b6d2', '#7f7f7f',
                   '#c7c7c7', '#bcbd22', '#dbdb8d', '#17becf', '#9edae5']
-
-
-    ax.xaxis.set_major_locator(mdates.HourLocator(interval=6))
-    ax.xaxis.set_major_formatter(mdates.DateFormatter("%B-%d %H:%M"))
+    ax.xaxis.set_major_locator(dates.HourLocator(interval=6))
+    ax.xaxis.set_major_formatter(dates.DateFormatter("%B-%d %H:%M"))
     ax.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda x, p: format(float(x), ',')))
     plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
     ax.plot(list_time[1:],error_bi[1:], marker='o', 
