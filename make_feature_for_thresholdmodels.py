@@ -253,27 +253,28 @@ def make_input_for_models(effective_time):
        y_train=np.load(code_address+'/%s/outcome%s.npy'
                        %(effective_time,i),allow_pickle=True)
         #create new dataframe and add features for different trainsize               
-       p=pd.DataFrame(np.load(code_address+'/features/x_train%s.npy'
-                              %(i)))
+       DataFrameForFeatures=pd.DataFrame(
+           np.load(code_address+'/features/x_train%s.npy'%(i)))
        #change the column name of DataFrameForFeatures                       
-       p.columns=['in_deg',
+       DataFrameForFeatures.columns=['in_deg',
                   'out_deg',
                   'number_of_RT_train',
                   'number_of_RE_train',
                   'RT_neigh_train',
                   'RE_neigh_train']
-       p['user']=np.load(code_address+'/features/user%s.npy'
-                         %(i),allow_pickle=True)
+       DataFrameForFeatures['user']=np.load(
+           code_address+'/features/user%s.npy'%(i),allow_pickle=True)
        #filter users who are active and inactive at the moment                  
-       df=pd.DataFrame({'user':user})
-       df = df.merge(p, how='left', on='user')   
-       x_train=df[['in_deg',
+       TemporaryDataFrame=pd.DataFrame({'user':user})
+       TemporaryDataFrame = TemporaryDataFrame.merge(
+           DataFrameForFeatures, how='left', on='user')   
+       x_train=TemporaryDataFrame[['in_deg',
                    'out_deg',
                    'number_of_RT_train',
                    'number_of_RE_train',
                    'RT_neigh_train',
                    'RE_neigh_train']].to_numpy()
-       x_test=p[['in_deg',
+       x_test=DataFrameForFeatures[['in_deg',
                  'out_deg',
                  'number_of_RT_train',
                  'number_of_RE_train',
@@ -287,4 +288,4 @@ def make_input_for_models(effective_time):
        np.save(code_address+'/%s/threshold/x_train%s'
                %(effective_time,i),x_train)
        np.save(code_address+'/%s/threshold/x_test%s'
-               %(effective_time,i),x_test) 
+               %(effective_time,i),x_test)
