@@ -120,23 +120,23 @@ def prediction(main_data,
         list_ofthresholds = np.array(graph_data_drop_duplicate_users['threshold'])
         list_ofupthreshold = np.array(graph_data_drop_duplicate_users['up_threshold'])
         list_ofdownthreshold = np.array(graph_data_drop_duplicate_users['down_threshold'])
-        window_test = main_data.loc[
-            (main_data['date']==max_time_in_trainset),'date'].min() + DateOffset(hours=6)
+        window_test = max_time_in_trainset+ DateOffset(hours=6)
         while min_time_in_prediction <= max_time_in_prediction:    
-            window_min = min_time_in_prediction 
-            window_max = min_time_in_prediction + DateOffset(hours=1)
+            CurrentTime = min_time_in_prediction 
+            EndTime = min_time_in_prediction + DateOffset(hours=1)
             #update the login time for users who are not become active at all
             mask = (graph_data_drop_duplicate_users['counter_bi']==0)
             graph_data_drop_duplicate_users.loc[
-                mask, 'login_time_bithreshold'] = window_min  
+                mask, 'login_time_bithreshold'] = CurrentTime  
             #update the login time for users who are not become active at all
             mask = (graph_data_drop_duplicate_users['counter_thre']==0)
             graph_data_drop_duplicate_users.loc[
-                mask, 'login_time_linearthreshold'] = window_min  
+                mask, 'login_time_linearthreshold'] = CurrentTime  
              #obtain the list of real active node at the moment
             list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[
-                 (MainDataFrame['date']>=window_min)&
-                 (MainDataFrame['date']<window_max),'user']))))
+                 (MainDataFrame['date']>=CurrentTime)&
+                 (MainDataFrame['date']<EndTime),'user']))))
+            list_of_active_nodes_indata = list(set(list_of_active_nodes_indata))     
 ################################################### compute the real active nodes
 ################################################### predict the active node based on linear threhsold model
              #delete the nodes who are not effective
@@ -144,10 +144,10 @@ def prediction(main_data,
                  graph_data_drop_duplicate_users.loc[
                      (graph_data_drop_duplicate_users[
                          'effective_time_for_linear_threshold'
-                         ]>=window_min),'user'])
+                         ]>=CurrentTime),'user'])
              #update effective neighbor for each user
-             graph_data['active_neighbor']=0
-             graph_data.loc[ graph_data['target'].isin(list_of_effective_node),
+            graph_data['active_neighbor']=0
+            graph_data.loc[ graph_data['target'].isin(list_of_effective_node),
                             'active_neighbor']=1  
              #obtain the active nodes
              list_of_number_of_activeneighbor = np.array(
@@ -161,25 +161,25 @@ def prediction(main_data,
                      (graph_data_drop_duplicate_users['user'].isin(
                          list_of_activenode))&
                      (graph_data_drop_duplicate_users[
-                         'login_time_linearthreshold']!=window_min),'user'])
+                         'login_time_linearthreshold']!=CurrentTime),'user'])
              list_of_activenode= list(
                  set(list_of_activenode)-set(list_of_offlinenodes)) 
              #set the effective time for new active nodes
              mask = (graph_data_drop_duplicate_users['user'].isin(list_of_activenode))
              graph_data_drop_duplicate_users.loc[
                  mask, 'effective_time_for_linear_threshold'] = \
-                 window_min+DateOffset(hours=effective_time)    
+                 CurrentTime+DateOffset(hours=effective_time)    
              #reset login time for new active nodes    
              graph_data_drop_duplicate_users.loc[
                  graph_data_drop_duplicate_users['user'].isin(list_of_activenode),
-                 'login_time_linearthreshold']=window_min
+                 'login_time_linearthreshold']=CurrentTime
              graph_data_drop_duplicate_users.loc[
                  graph_data_drop_duplicate_users['user'].isin(list_of_activenode),
                  'counter_thre']=1
              #update login time 
              graph_data_drop_duplicate_users = set_login_time(
                  graph_data_drop_duplicate_users, login_type, 
-                 login_time, k, b, window_min, 'threshold')
+                 login_time, k, b, CurrentTime, 'threshold')
              list_of_activenodes_predicted_by_linearthreshold.extend(list_of_activenode)
 ################################################### end of prediction by linear threshold
 ################################################### epredict the active node based on bithrehsold model        
@@ -188,7 +188,7 @@ def prediction(main_data,
                  graph_data_drop_duplicate_users.loc[
                      (graph_data_drop_duplicate_users[
                          'effective_time_for_bi_threshold'
-                         ]>=window_min),'user'])
+                         ]>=CurrentTime),'user'])
              #update effective neighbor for each user
              graph_data['active_neighbor']=0
              graph_data.loc[graph_data['target'].isin(list_of_effective_node),
@@ -209,25 +209,25 @@ def prediction(main_data,
                      (graph_data_drop_duplicate_users['user'].isin(
                          list_of_activenode))&
                      (graph_data_drop_duplicate_users[
-                         'login_time_bithreshold']>window_min),'user'])
+                         'login_time_bithreshold']>CurrentTime),'user'])
              list_of_activenode= list(
                  set(list_of_activenode)-set(list_of_offlinenodes))   
              #set the effective time for new active nodes
              mask = (graph_data_drop_duplicate_users['user'].isin(list_of_activenode))
              graph_data_drop_duplicate_users.loc[
                  mask, 'effective_time_for_bi_threshold'] =  \
-                 window_min+DateOffset(hours=effective_time)
+                 CurrentTime+DateOffset(hours=effective_time)
              #reset login time for new active nodes    
              graph_data_drop_duplicate_users.loc[
                  graph_data_drop_duplicate_users['user'].isin(list_of_activenode),
-                 'login_time_bithreshold']=window_min
+                 'login_time_bithreshold']=CurrentTime
              graph_data_drop_duplicate_users.loc[
                  graph_data_drop_duplicate_users['user'].isin(list_of_activenode),
                  'counter_bi']=1  
              #update login time           
              graph_data_drop_duplicate_users  = set_login_time(
                  graph_data_drop_duplicate_users, 
-                 login_type, login_time, k, b, window_min, 'bi')                
+                 login_type, login_time, k, b, CurrentTime, 'bi')                
              list_of_activenodes_predicted_by_bithreshold.extend(list_of_activenode) 
 ################################################### bi_threshold   
              #compute the mean absolute percentage error for both models
