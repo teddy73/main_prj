@@ -8,14 +8,17 @@ import os
 def plot(LoginType,LoginTime,K,B,EffectiveTime):
     #get the working directory
     CodeAddress = os.getcwd()
-    list_time= os.getcwd()
-    error_bi= os.getcwd()
-    error_linear = os.getcwd()
+    error_linear= np.load(
+            CodeAddress+'/%s/result/errorre_effectivetime%s_logintype%s.npy'
+            %(EffectiveTime,EffectiveTime,LoginType))
+    error_bi= np.load(CodeAddress+'/%s/result/errorbi_effectivetime%s_logintype%s.npy'
+                %(EffectiveTime,EffectiveTime,LoginType))
+    list_time = np.load(CodeAddress+'/%s/result/time_effectivetime%s_logintype%s.npy'
+                %(EffectiveTime,EffectiveTime,LoginType))
     plt.rcParams.update({'font.size': 50})
     fig,ax= plt.subplots(figsize=(40,20),dpi=100)
     def format_date(x, pos=None):
         return dates.num2date(x).strftime('%B-%d %H:%M') #use FuncFormatter to format dates
-
     m=[dates.date2num(list_time) for i in range(0,20)]
     m=m[0]
     color_sequence = ['#1f77b4', '#aec7e8', '#ff7f0e', '#ffbb78', '#2ca02c',
@@ -26,17 +29,16 @@ def plot(LoginType,LoginTime,K,B,EffectiveTime):
     ax.xaxis.set_major_formatter(dates.DateFormatter("%B-%d %H:%M"))
     ax.yaxis.set_major_formatter(mpl.ticker.FuncFormatter(lambda x, p: format(float(x), ',')))
     plt.grid(True, 'major', 'y', ls='--', lw=.5, c='k', alpha=.3)
-    ax.plot(list_time[1:],error_bi[1:], marker='o', 
+    ax.plot(list_time,error_bi, marker='o', 
             markerfacecolor='blue', markersize=20,lw=10.0,color=color_sequence[14])
-    ax.plot(list_time[1:],error_linear[1:],linestyle='--', 
+    ax.plot(list_time,error_linear,linestyle='--', 
             marker='o', markerfacecolor='blue', markersize=20,linewidth=10.0,color=color_sequence[15])
-
     ax.xaxis.set_major_locator(ticker.FixedLocator(m)) # I want all the dates on my xaxis
     ax.xaxis.set_major_formatter(ticker.FuncFormatter(format_date))
-
     plt.ylabel('Mean absolute percentage error ($*100$)')
     plt.xlabel('prediction time')
-    plt.legend(['bithreshold with $t_{eff}=5$','linear threshold with $t_{eff}=5$'])
+    plt.legend(['bithreshold with $t_{eff}$=%s'%(EffectiveTime),
+    'linear threshold with $t_{eff}$=%s'%(EffectiveTime)])
     plt.xticks(rotation=90)
-    #plt.savefig('/Users/macbook/Desktop/114.jpg',bbox_inches='tight', dpi=150)
-    plt.show()
+    plt.savefig(CodeAddress+'plot/effectivetime%s_logintype%s.jpg'
+    %(EffectiveTime,LoginType),bbox_inches='tight', dpi=150)
