@@ -156,7 +156,8 @@ def create_inputs_for_thresholdmodel(main_data,
                     graph_data_drop_duplicate_users['user'].isin(sample_inactive)]
             #compute the influential weight for inactive nodes
             dataframe_ofinactive_nodes = \
-                dataframe_ofinactive_nodes.merge(temporary_dataframe, how='left', on='user')
+                dataframe_ofinactive_nodes.merge(temporary_dataframe, 
+                how='left', on='user')
             out_degree_of_users_are_inactive_now =\
                 1/np.array(dataframe_ofinactive_nodes['out_deg'])
             number_of_active_neighbor_for_each_node = np.array(
@@ -172,12 +173,13 @@ def create_inputs_for_thresholdmodel(main_data,
             graph_data_drop_duplicate_users = set_login_time(
                 graph_data_drop_duplicate_users, login_type, 
                 login_time, k, b, CurrentTime, 'featureformodels')
-            
+        #check if time for saving results or no    
         if min_time_for_trainset != trainset_time:
             min_time_for_trainset = min_time_for_trainset + DateOffset(hours=1) 
         else:    
             #we want to save features that we made for specific trainsize
             trainset_time = trainset_time + DateOffset(hours=6) 
+            min_time_for_trainset = min_time_for_trainset + DateOffset(hours=1)
             #filter dataframe based on nodes who are active
             temporary_dataframe = train_dataframe_for_influence.loc[
                 (train_dataframe_for_influence['outcome']==1)]
@@ -246,46 +248,46 @@ def make_input_for_models(effective_time):
     loop=[i for i in range(1,24)]
     #we should load influence and features that we create to make inputs
     for i in loop:
-       user=np.load(code_address+'/%s/user%s.npy' 
+        user=np.load(code_address+'/%s/user%s.npy' 
                     %(effective_time,i),allow_pickle=True)
-       t_train=np.load(code_address+'/%s/t_train%s.npy'
+        t_train=np.load(code_address+'/%s/t_train%s.npy'
                        %(effective_time,i),allow_pickle=True)
-       y_train=np.load(code_address+'/%s/outcome%s.npy'
+        y_train=np.load(code_address+'/%s/outcome%s.npy'
                        %(effective_time,i),allow_pickle=True)
         #create new dataframe and add features for different trainsize               
-       DataFrameForFeatures=pd.DataFrame(
+        DataFrameForFeatures=pd.DataFrame(
            np.load(code_address+'/features/x_train%s.npy'%(i)))
-       #change the column name of DataFrameForFeatures                       
-       DataFrameForFeatures.columns=['in_deg',
+        #change the column name of DataFrameForFeatures                       
+        DataFrameForFeatures.columns=['in_deg',
                   'out_deg',
                   'number_of_RT_train',
                   'number_of_RE_train',
                   'RT_neigh_train',
                   'RE_neigh_train']
-       DataFrameForFeatures['user']=np.load(
+        DataFrameForFeatures['user']=np.load(
            code_address+'/features/user%s.npy'%(i),allow_pickle=True)
-       #filter users who are active and inactive at the moment                  
-       TemporaryDataFrame=pd.DataFrame({'user':user})
-       TemporaryDataFrame = TemporaryDataFrame.merge(
+        #filter users who are active and inactive at the moment                  
+        TemporaryDataFrame=pd.DataFrame({'user':user})
+        TemporaryDataFrame = TemporaryDataFrame.merge(
            DataFrameForFeatures, how='left', on='user')   
-       x_train=TemporaryDataFrame[['in_deg',
+        x_train=TemporaryDataFrame[['in_deg',
                    'out_deg',
                    'number_of_RT_train',
                    'number_of_RE_train',
                    'RT_neigh_train',
                    'RE_neigh_train']].to_numpy()
-       x_test=DataFrameForFeatures[['in_deg',
+        x_test=DataFrameForFeatures[['in_deg',
                  'out_deg',
                  'number_of_RT_train',
                  'number_of_RE_train',
                  'RT_neigh_train',
                  'RE_neigh_train']].to_numpy()
-       #save the results           
-       np.save(code_address+'/%s/threshold/y_train%s'
+        #save the results           
+        np.save(code_address+'/%s/threshold/y_train%s'
                %(effective_time,i),y_train)
-       np.save(code_address+'/%s/threshold/t_train%s'
+        np.save(code_address+'/%s/threshold/t_train%s'
                %(effective_time,i),t_train)
-       np.save(code_address+'/%s/threshold/x_train%s'
+        np.save(code_address+'/%s/threshold/x_train%s'
                %(effective_time,i),x_train)
-       np.save(code_address+'/%s/threshold/x_test%s'
+        np.save(code_address+'/%s/threshold/x_test%s'
                %(effective_time,i),x_test)
