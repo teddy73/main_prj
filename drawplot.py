@@ -10,11 +10,11 @@ def plot(LoginType,LoginTime,K,B,EffectiveTime):
     CodeAddress = os.getcwd()
     error_linear= np.load(
             CodeAddress+'/%s/result/errorre_effectivetime%s_logintype%s.npy'
-            %(EffectiveTime,EffectiveTime,LoginType))
+            %(EffectiveTime,EffectiveTime,LoginType),allow_pickle=True)
     error_bi= np.load(CodeAddress+'/%s/result/errorbi_effectivetime%s_logintype%s.npy'
-                %(EffectiveTime,EffectiveTime,LoginType))
+                %(EffectiveTime,EffectiveTime,LoginType),allow_pickle=True)
     list_time = np.load(CodeAddress+'/%s/result/time_effectivetime%s_logintype%s.npy'
-                %(EffectiveTime,EffectiveTime,LoginType))
+                %(EffectiveTime,EffectiveTime,LoginType),allow_pickle=True)
     plt.rcParams.update({'font.size': 50})
     fig,ax= plt.subplots(figsize=(40,20),dpi=100)
     def format_date(x, pos=None):
@@ -40,5 +40,5 @@ def plot(LoginType,LoginTime,K,B,EffectiveTime):
     plt.legend(['bithreshold with $t_{eff}$=%s'%(EffectiveTime),
     'linear threshold with $t_{eff}$=%s'%(EffectiveTime)])
     plt.xticks(rotation=90)
-    plt.savefig(CodeAddress+'plot/effectivetime%s_logintype%s.jpg'
+    plt.savefig(CodeAddress+'/plots/effectivetime%s_logintype%s.jpg'
     %(EffectiveTime,LoginType),bbox_inches='tight', dpi=150)
