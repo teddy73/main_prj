@@ -19,8 +19,6 @@ code_address = os.getcwd()
 print(code_address)
 #make folder for plots
 os.mkdir(code_address+'/plots/')
-#define global address to allow other function use it
-global address
 flag_get_feature = True
 flag_craete_data = True
 effective_time = [5,10,15,20,25]
@@ -34,7 +32,7 @@ else:
 k=8
 # you can change the base in  login_type='exponential'   
 b=2
-
+AddressList=[5,10,15,20,25]
 def main_func():   
     #set the data address
     data_address = os.path.join(code_address, 'data/higgs-activity_time.txt')
@@ -74,7 +72,6 @@ def main_func():
             login_time,
             k,
             b)      
-        address ='%s'%(i)
         #for each effective time we should make input 
         make_input_for_models(i)
         #we call computethreshold function parallary for all trainsize
@@ -90,13 +87,14 @@ def main_func():
                    k, 
                    b)
         plot(login_type,login_time,k,b,i)
+        AddressList.pop(0) 
 #for each trainsize, we should compute threshold, up and down thresholds        
 def compute_thresholds(d):  
     #set the variable that we need for model  
-    y_train = np.load(code_address+'/address/threshold/y_train%s.npy' %(d))
-    t_train=np.load(code_address+'/address/threshold/t_train%s.npy'%(d))
-    x_train=np.load(code_address+'/address/threshold/x_train%s.npy'%(d))
-    x_test=np.load(code_address+'/address/threshold/x_test%s.npy'%(d))
+    y_train = np.load(code_address+'/%s/threshold/y_train%s.npy' %(AddressList[0],d))
+    t_train=np.load(code_address+'/%s/threshold/t_train%s.npy'%(AddressList[0],d))
+    x_train=np.load(code_address+'/%s/threshold/x_train%s.npy'%(AddressList[0],d))
+    x_test=np.load(code_address+'/%s/threshold/x_test%s.npy'%(AddressList[0],d))
     variable_names = []
     for i in range(x_train.shape[1]):
         variable_names.append(f"Column {i}") 
