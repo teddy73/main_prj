@@ -39,15 +39,15 @@ def create_inputs_for_thresholdmodel(main_data,
     graph_data_drop_duplicate_users['active_neighbor']=0
     #we want to compute the influence for different trainsize
     while min_time_for_trainset <= max_time_for_trainset: 
-        window_min = min_time_for_trainset 
-        window_max = min_time_for_trainset + DateOffset(hours=1) 
+        CurrentTime = min_time_for_trainset 
+        EndTime = min_time_for_trainset + DateOffset(hours=1) 
         #update the login time for users who are not become active at all
         mask = (graph_data_drop_duplicate_users['counter']==0)
         graph_data_drop_duplicate_users.loc[
-                mask, 'login_time'] = window_min
+                mask, 'login_time'] = CurrentTime
         #obtain the active node at the moment
         dataframe_ofactive_nodes = main_data.query(
-                'date>=@window_min & date<@window_max')
+                'date>=@CurrentTime & date<@EndTime')
         #get the list of active node
         list_of_active_nodes = list(set(list(
                 dataframe_ofactive_nodes['user'])+list(
@@ -56,10 +56,10 @@ def create_inputs_for_thresholdmodel(main_data,
             #obtain list of nodes who are effective at the moment
             list_of_influential_nodes =\
                 list(main_data.loc[
-                    (main_data['effective_time']>=window_min) & 
-                    (main_data['date']<window_min),'user'])+list(
-                        main_data.loc[(main_data['effective_time']>=window_min)&
-                                      (main_data['date']<window_min),'target_user'])
+                    (main_data['effective_time']>=CurrentTime) & 
+                    (main_data['date']<CurrentTime),'user'])+list(
+                        main_data.loc[(main_data['effective_time']>=CurrentTime)&
+                                      (main_data['date']<CurrentTime),'target_user'])
             list_of_influential_nodes =list(set(
                     list_of_influential_nodes))
             #reset the influential neighbor for each user 
@@ -103,7 +103,7 @@ def create_inputs_for_thresholdmodel(main_data,
             #update login time for active nodes
             graph_data_drop_duplicate_users.loc[
                     graph_data_drop_duplicate_users['user'].isin(
-                        list_of_active_nodes),'login_time']=window_min
+                        list_of_active_nodes),'login_time']=CurrentTime
             graph_data_drop_duplicate_users.loc[
                     graph_data_drop_duplicate_users['user'].isin(
                         list_of_active_nodes),'counter']=1
@@ -122,7 +122,7 @@ def create_inputs_for_thresholdmodel(main_data,
                     graph_data_drop_duplicate_users.loc[
                         (graph_data_drop_duplicate_users['user'].isin(
                             list_of_nodes_that_not_become_active_atall))&
-                        (graph_data_drop_duplicate_users['login_time']!= window_min),
+                        (graph_data_drop_duplicate_users['login_time']!= CurrentTime),
                         'user'])
             #delete users who are not online then we compute the influence
             list_of_nodes_that_not_become_active_atall= list(
@@ -131,7 +131,7 @@ def create_inputs_for_thresholdmodel(main_data,
             temporary_list=list(graph_data_drop_duplicate_users.loc[
                     (graph_data_drop_duplicate_users['user'].isin(
                         list_of_inactive_now))&
-                    (graph_data_drop_duplicate_users['login_time']!= window_min),
+                    (graph_data_drop_duplicate_users['login_time']!= CurrentTime),
                     'user'])
             list_of_inactive_now= list(
                     set(list_of_inactive_now)-set(temporary_list))
@@ -171,7 +171,7 @@ def create_inputs_for_thresholdmodel(main_data,
             #update the logintime
             graph_data_drop_duplicate_users = set_login_time(
                 graph_data_drop_duplicate_users, login_type, 
-                login_time, k, b, window_min, 'featureformodels')
+                login_time, k, b, CurrentTime, 'featureformodels')
             
         if min_time_for_trainset != trainset_time:
             min_time_for_trainset = min_time_for_trainset + DateOffset(hours=1) 
