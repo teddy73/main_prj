@@ -44,7 +44,7 @@ def set_login_time(graph_data_drop_duplicate_users,login_type,login_time,k,b,win
         graph_data_drop_duplicate_users.loc[
                        mask, col_login] = np.array(p[0])      
     else :
-        temp=math.floor(math.log(k, b))
+        temp=math.ceil(math.log(k, b))
         for i in range(1,temp+1):
             mask = (graph_data_drop_duplicate_users[col_counter]==i)& (
                      graph_data_drop_duplicate_users[col_login]==window_min)
