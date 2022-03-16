@@ -2,7 +2,6 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import pandas as pd
-import datetime
 import os
 from create_dataframe import create_dataframe_and_graph_data, add_feature_in_dataset
 from getfeature import create_features_for_all_trainset
@@ -63,15 +62,15 @@ def main_func():
 #we call computethreshold function parallary for all trainsize    
 def paraller():
     pool=Pool(processes=6)
-    pool.starmap(compute_thresholds,a)  
+    pool.starmap(compute_thresholds,ListOfEffectivetimeTrainsize)  
          
 #for each trainsize, we should compute threshold, up and down thresholds        
-def compute_thresholds(b,d):  
+def compute_thresholds(TEffesctive,Train):  
     #set the variable that we need for model  
-    y_train = np.load(code_address+'/%s/threshold/y_train%s.npy' %(b,d))
-    t_train=np.load(code_address+'/%s/threshold/t_train%s.npy'%(b,d))
-    x_train=np.load(code_address+'/%s/threshold/x_train%s.npy'%(b,d))
-    x_test=np.load(code_address+'/%s/threshold/x_test%s.npy'%(b,d))
+    y_train = np.load(code_address+'/%s/threshold/y_train%s.npy' %(TEffesctive,Train))
+    t_train=np.load(code_address+'/%s/threshold/t_train%s.npy'%(TEffesctive,Train))
+    x_train=np.load(code_address+'/%s/threshold/x_train%s.npy'%(TEffesctive,Train))
+    x_test=np.load(code_address+'/%s/threshold/x_test%s.npy'%(TEffesctive,Train))
     variable_names = []
     for i in range(x_train.shape[1]):
         variable_names.append(f"Column {i}") 
@@ -81,16 +80,16 @@ def compute_thresholds(b,d):
     ctl_predict = ctl.predict(x_test)
     triggers = ctl.get_triggers(x_test)
     #save thresholds
-    np.save(code_address+'/%s/threshold/threshold%s'%(b,d), triggers)
+    np.save(code_address+'/%s/threshold/threshold%s'%(TEffesctive,Train), triggers)
     # bithreshold CTL
     ctl_bi_threshold = CausalTree_bi_threshold(cont=True)
     ctl_bi_threshold.fit(x_train, y_train, t_train)
     ctl_predict_bi_threshold = ctl_bi_threshold.predict(x_test)
     triggers_bi_threshold = ctl_bi_threshold.get_triggers(x_test)
     #save thresholds
-    np.save(code_address+'/%s/threshold/down_threshold%s'%(b,d), 
+    np.save(code_address+'/%s/threshold/down_threshold%s'%(TEffesctive,Train), 
     triggers_bi_threshold[0])
-    np.save(code_address+'/%s/threshold/up_threshold%s'%(b,d), 
+    np.save(code_address+'/%s/threshold/up_threshold%s'%(TEffesctive,Train), 
     triggers_bi_threshold[1]) 
 
 if __name__ == "__main__":
@@ -109,7 +108,7 @@ if __name__ == "__main__":
         #for each effective time we should make input 
         make_input_for_models(i)
         #we call computethreshold function parallary for all trainsize
-        a = [(i,k)for k in range(1,24) ]
+        ListOfEffectivetimeTrainsize = [(i,k)for k in range(1,24) ]
         paraller()
         print('finished')
         #after we get thresholds we call prediction function   
