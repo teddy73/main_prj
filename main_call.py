@@ -18,7 +18,7 @@ from drawplot import*
 code_address = os.getcwd()
 print(code_address)
 #make folder for plots
-os.mkdir(code_address+'/plots/')
+#os.mkdir(code_address+'/plots/')
 flag_get_feature = True
 flag_craete_data = True
 effective_time = [5,10,15,20,25]
@@ -32,7 +32,6 @@ else:
 k=8
 # you can change the base in  login_type='exponential'   
 b=2
-AddressList=[5,10,15,20,25]
 def main_func():   
     #set the data address
     data_address = os.path.join(code_address, 'data/higgs-activity_time.txt')
