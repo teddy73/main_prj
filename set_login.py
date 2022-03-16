@@ -45,7 +45,7 @@ def set_login_time(graph_data_drop_duplicate_users,login_type,login_time,k,b,win
                        mask, col_login] = np.array(p[0])      
     else :
         temp=math.floor(math.log(k, b))
-        for i in range(1,temp):
+        for i in range(1,temp+1):
             mask = (graph_data_drop_duplicate_users[col_counter]==i)& (
                      graph_data_drop_duplicate_users[col_login]==window_min)
             p=pd.DataFrame(np.array(graph_data_drop_duplicate_users.loc[
@@ -55,7 +55,7 @@ def set_login_time(graph_data_drop_duplicate_users,login_type,login_time,k,b,win
             graph_data_drop_duplicate_users.loc[mask, col_counter] = \
                     graph_data_drop_duplicate_users.loc[
                         mask, col_counter].apply(lambda x: x+1)
-        mask = (graph_data_drop_duplicate_users[col_counter]==temp)& (
+        mask = (graph_data_drop_duplicate_users[col_counter]==temp+1)& (
                 graph_data_drop_duplicate_users[col_login]==window_min)
         p=pd.DataFrame(np.array(
                 graph_data_drop_duplicate_users.loc[
