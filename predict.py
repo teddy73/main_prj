@@ -124,12 +124,13 @@ def prediction(main_data,
             mask = (graph_data_drop_duplicate_users['counter_thre']==0)
             graph_data_drop_duplicate_users.loc[
                 mask, 'login_time_linearthreshold'] = CurrentTime  
-             #obtain the list of real active node at the moment
-            list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[
-                 (MainDataFrame['date']>=CurrentTime)&
-                 (MainDataFrame['date']<EndTime),'user']))))     
-################################################### compute the real active nodes
-################################################### predict the active node based on linear threhsold model
+            #obtain the list of real active node at the moment
+            mask = (main_data['date']>=CurrentTime)&(main_data['date']<EndTime)
+            list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[mask, 
+            'target_user']))))
+            list_of_active_nodes_indata.extend(list(main_data.loc[mask,'user']))
+## compute the real active nodes
+## predict the active node based on linear threhsold model
              #delete the nodes who are not effective
             list_of_effective_node = np.array(
                  graph_data_drop_duplicate_users.loc[
