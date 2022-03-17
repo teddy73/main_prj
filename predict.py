@@ -126,7 +126,7 @@ def prediction(main_data,
                 mask, 'login_time_linearthreshold'] = CurrentTime  
             #obtain the list of real active node at the moment
             mask = (main_data['date']>=CurrentTime)&(main_data['date']<EndTime)
-            list_of_active_nodes_indata.extend(list(set(list(MainDataFrame.loc[mask, 
+            list_of_active_nodes_indata.extend(list(set(list(main_data.loc[mask, 
             'target_user']))))
             list_of_active_nodes_indata.extend(list(main_data.loc[mask,'user']))
 ## compute the real active nodes
