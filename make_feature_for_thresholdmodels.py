@@ -37,6 +37,8 @@ def create_inputs_for_thresholdmodel(main_data,
     graph_data['active_neighbor']=0
     graph_data_drop_duplicate_users['active_user']=0
     graph_data_drop_duplicate_users['active_neighbor']=0
+    graph_data_drop_duplicate_users['login_time']=main_data['date'].min()
+    graph_data_drop_duplicate_users['counter']=0
     #we want to compute the influence for different trainsize
     while min_time_for_trainset <= max_time_for_trainset: 
         CurrentTime = min_time_for_trainset 
