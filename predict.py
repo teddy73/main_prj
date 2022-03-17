@@ -78,7 +78,7 @@ def prediction(main_data,
             graph_data_drop_duplicate_users.select_dtypes(include=['datetime'])
         graph_data_drop_duplicate_users[DataFrameWithDatetimeColumns.columns] = \
             DataFrameWithDatetimeColumns.fillna(
-                main_data['date'].min()-DateOffset(hours=35)) 
+                main_data['date'].min()-DateOffset(hours=45)) 
         #update effective time                  
         graph_data_drop_duplicate_users['effective_time'] =\
             graph_data_drop_duplicate_users[
